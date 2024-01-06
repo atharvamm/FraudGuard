@@ -5,11 +5,29 @@ import signal
 import sys
 from models.houseprice import predict_houseprice,load_houseprice_model
 import pandas as pd
+import logging
+from utils.fileops import delete_files_in_directory
 
+# Defining path variables
 sys.path.append(os.path.dirname(__file__))
+root_path = os.path.dirname(__file__)
 
+# Clean Logs
+delete_files_in_directory(os.path.join(root_path,"logs"))
+# Clean DBs
 
 # '''
+# Logging
+if bool(os.getenv("FLASK_DEBUG")):
+    logfpath = os.path.join(root_path,'logs','dev.log')
+    logging.basicConfig(filename = logfpath, level=logging.DEBUG,
+                        format='%(asctime)s [%(levelname)s] - %(message)s')
+else:
+    logfpath = os.path.join(root_path,'logs','prod.log')
+    logging.basicConfig(filename = logfpath, level=logging.INFO,
+                        format='%(asctime)s [%(levelname)s] - %(message)s')
+
+
 # Cleanup before exiting app
 def cleanup(signum, frame):
     print(f"Received signal {signum}. Cleaning up before shutting down...")
@@ -33,11 +51,43 @@ def is_ip_allowed():
 # Create app
 app = Flask(__name__)
 
+
+# App Logging
+@app.before_request
+def log_request_info():
+    # Log request information before processing the request
+    log_data = {
+        'method': request.method,
+        'path': request.path,
+        'query_string': request.query_string,
+        'data': request.data.decode('utf-8'),
+        'remote_addr': request.remote_addr,
+        'user_agent': request.headers.get('User-Agent'),
+    }
+    logging.info(f'Request: {log_data}')
+
 # Define function to check ip
 @app.before_request
 def check_ip_access():
     if not is_ip_allowed():
         return jsonify({'error': 'Access denied. IP address not allowed.'}), 403
+
+@app.after_request
+def log_response_info(response):
+    # Log response information after processing the request
+    log_data = {
+        'status_code': response.status_code,
+        'response_data': response.data.decode('utf-8'),
+        'host_addr': request.host,
+    }
+    logging.info(f'Response: {log_data}')
+    return response
+
+
+# Background model training
+
+
+#### Services
 
 # Test route
 @app.route("/test")

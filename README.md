@@ -6,6 +6,12 @@ The model was trained using CatBoost.
 ## Environment
 The .yml file to create the environment is in utils directory.
 
+## Training the models
+1. Clone the repo `git clone https://github.com/atharvamm/FraudGuard.git`
+2. Create environment from .yml file `conda env create -f utils/fraudguard.yml`
+3. Run the `houseprice.ipynb` notebook in eda directory.
+
+
 ## To run the code 
 1. Clone the repo `git clone https://github.com/atharvamm/FraudGuard.git`
 2. Create environment from .yml file `conda env create -f utils/fraudguard.yml`
@@ -17,7 +23,10 @@ The .yml file to create the environment is in utils directory.
     ALLOWED_IPS= IPs allowed to request service
     REMOTE_HOST= Remote host so that you can test the service.
     ```
-This should setup and run the code.
+4. Run `python run.py` to run the code and start the service.
 
 ## To test the code
 Follow the above steps and run `test_requests.py` in tests directory. It should first run a test to see if it is able to connect to the server. And then generate sample datapoints to get predictions.
+
+## Training Dataset
+Dataset at [Link](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/overview)

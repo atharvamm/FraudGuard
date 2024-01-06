@@ -6,6 +6,8 @@ from models.houseprice import generate_sample_houseprice_points
 import pandas as pd
 import time
 import random
+from flask import jsonify
+import json
 
 # Initial test to check if successful connection
 def test_local_service(host, port):
@@ -58,14 +60,31 @@ def test_house_price_model(host,port,samples = 100):
         except requests.RequestException as e:
             print(f"Error making request: {e}")
 
+
+def test_authenticate_component(host,port,uname = "john_doe",pswd = "password123"):
+    login_url = f"http://{host}:{port}/login"
+    protected_url = f"http://{host}:{port}/protected"
+
+    login_response = requests.post(login_url,json={"username":str(uname),"password":str(pswd)})
+
+    if login_response.status_code == 200:
+        token = login_response.json()["token"]
+        headers = {"Authorization":token}
+        protected_response = requests.get(protected_url,headers=headers)
+        if protected_response.status_code == 200:
+            print(protected_response.json())
+
+
+
 if __name__ == "__main__":
-    host = True
+    host = False
     if host:
         from utils.load_env import load_env_file
         load_env_file(".env")
         host = os.getenv("REMOTE_HOST")
     else:
         host = "localhost"
-    test_local_service(host, 8000)
-    test_house_price_model(host, 8000,samples=10)
+    # test_local_service(host, 5000)
+    # test_house_price_model(host, 8000,samples=10)
+    test_authenticate_component(host,5000)
 

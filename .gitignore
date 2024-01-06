@@ -9,3 +9,4 @@
 **/data/**
 **/catboost_info/**
 **/checkpoints/**
+**/logs/**
