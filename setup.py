@@ -11,12 +11,12 @@ from models.houseprice import *
 import logging
 
 
-
 # Load files and models
 load_env_file(".env")
-def load_models():
-    load_houseprice_model()
-load_models()
+# def load_models():
+#     load_houseprice_model()
+# load_models()
+load_houseprice_model()
 
 
 # Clean Logs

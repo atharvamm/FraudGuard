@@ -26,21 +26,24 @@ def test_local_service(host, port):
 
 # Randomly generate data and then get predictions.
 def test_house_price_model(host,port,samples = 100):
-    final_cols = ['MSSubClass', 'LotFrontage', 'LotArea', 'LotShape', 'OverallQual',
-       'OverallCond', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea', 'ExterQual',
-       'BsmtFinSF1', 'BsmtUnfSF', 'TotalBsmtSF', 'CentralAir', '1stFlrSF',
-       '2ndFlrSF', 'GrLivArea', 'BsmtFullBath', 'FullBath', 'HalfBath',
-       'BedroomAbvGr', 'TotRmsAbvGrd', 'Fireplaces', 'GarageYrBlt',
-       'GarageFinish', 'GarageCars', 'GarageArea', 'WoodDeckSF', 'OpenPorchSF',
-       'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'MoSold',
-       'YrSold']
+    # final_cols = ['MSSubClass', 'LotFrontage', 'LotArea', 'LotShape', 'OverallQual',
+    #    'OverallCond', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea', 'ExterQual',
+    #    'BsmtFinSF1', 'BsmtUnfSF', 'TotalBsmtSF', 'CentralAir', '1stFlrSF',
+    #    '2ndFlrSF', 'GrLivArea', 'BsmtFullBath', 'FullBath', 'HalfBath',
+    #    'BedroomAbvGr', 'TotRmsAbvGrd', 'Fireplaces', 'GarageYrBlt',
+    #    'GarageFinish', 'GarageCars', 'GarageArea', 'WoodDeckSF', 'OpenPorchSF',
+    #    'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'MoSold',
+    #    'YrSold']
     
-    # Read data from path and process data.
+    # # Read data from path and process data.
     path = "data/house-prices-advanced-regression-techniques/train.csv"
-    df = pd.read_csv(os.path.join(path))
-    df = df[final_cols]
-    df.dropna(inplace=True,how="any")    
-    sample_df = generate_sample_houseprice_points(df,samples)
+    # df = pd.read_csv(os.path.join(path))
+    # df = df[final_cols]
+    # df.dropna(inplace=True,how="any")    
+
+
+    # Remember to drop saleprice cause updated code
+    sample_df = generate_sample_houseprice_points(path,samples)
 
     pred = 10
     # Get predictions pred times

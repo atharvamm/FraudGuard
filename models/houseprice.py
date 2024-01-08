@@ -1,19 +1,31 @@
+import os
+import sys
+root_path = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(root_path)
+
 from catboost import CatBoostRegressor
 import pandas as pd
 from flask import jsonify
 import numpy as np
+from utils.dbops import getLastModel
 
 houseprice_model = None 
 
 # Load Model from Checkpoint
 def load_houseprice_model():
     global houseprice_model
-    houseprice_model_path = 'models/checkpoints/housing_price_model.cbm'
+
+    lastModel = getLastModel()
+    if len(lastModel) > 0:
+        houseprice_model_path = lastModel[0]["model_path"]
+    else:
+        houseprice_model_path = 'models/checkpoints/housing_price_model.cbm'
+    
     houseprice_model = CatBoostRegressor()
     houseprice_model.load_model(houseprice_model_path)
 
 # Columns to use to make predictions
-final_cols = ['MSSubClass', 'LotFrontage', 'LotArea', 'LotShape', 'OverallQual',
+pred_cols = ['MSSubClass', 'LotFrontage', 'LotArea', 'LotShape', 'OverallQual',
        'OverallCond', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea', 'ExterQual',
        'BsmtFinSF1', 'BsmtUnfSF', 'TotalBsmtSF', 'CentralAir', '1stFlrSF',
        '2ndFlrSF', 'GrLivArea', 'BsmtFullBath', 'FullBath', 'HalfBath',
@@ -21,6 +33,9 @@ final_cols = ['MSSubClass', 'LotFrontage', 'LotArea', 'LotShape', 'OverallQual',
        'GarageFinish', 'GarageCars', 'GarageArea', 'WoodDeckSF', 'OpenPorchSF',
        'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'MoSold',
        'YrSold']
+
+train_cols = pred_cols.copy()
+train_cols.append("SalePrice")
 
 def valid_vals(ip_data):
     "Check if the numerical and categorical value for ip_data is in the valid range for respective column."
@@ -30,8 +45,6 @@ def valid_vals(ip_data):
 # Check if the data type in the request is correct
 def check_dtypes(ip_data):
     string_cols = "LotShape","ExterQual","CentralAir","GarageFinish"
-
-    numeric_cols = ["MSSubClass", "LotFrontage", "LotArea", "OverallQual", "OverallCond","YearBuilt", "YearRemodAdd", "MasVnrArea", "BsmtFinSF1", "BsmtUnfSF","TotalBsmtSF", "1stFlrSF", "2ndFlrSF", "GrLivArea", "BsmtFullBath","FullBath", "HalfBath", "BedroomAbvGr", "TotRmsAbvGrd", "Fireplaces","GarageYrBlt", "GarageCars", "GarageArea", "WoodDeckSF", "OpenPorchSF","EnclosedPorch", "3SsnPorch", "ScreenPorch", "PoolArea", "MoSold","YrSold"]
 
     val_errors = []
     for col in string_cols:
@@ -52,7 +65,7 @@ def check_dtypes(ip_data):
 
 # Check the data before predicting
 def houseprice_datachecks(ip_data):
-    if not(all(ip_data.columns == final_cols)):
+    if not(all(ip_data.columns == pred_cols)):
         return False,"Not all columns available"
     dtypes,message = check_dtypes(ip_data)
     if not dtypes:
@@ -68,8 +81,23 @@ def predict_houseprice(data):
     else:
         return jsonify({'error': str(message)})
 
+
+# PreProcess housing data df
+def preprocess_housing_df(df_path):
+    
+    # Read data from path and process data.
+    df = pd.read_csv(df_path)
+    df = df[train_cols]
+    df.dropna(inplace=True,how="any")
+    return df.copy()
+
+
+
 # Generate random data point
-def generate_sample_houseprice_points(df,num_samples = 100):
+def generate_sample_houseprice_points(df_path,num_samples = 100):
+
+    df = preprocess_housing_df(df_path)   
+
     bootstrapped_samples = []
 
     for _ in range(num_samples):
