@@ -4,7 +4,7 @@ from boto3.dynamodb.conditions import Key
 from utils.load_env import load_env_file
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String,Float
 
-sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 load_env_file(".env")
 
 ######    DynamoDB    ######
@@ -110,9 +110,8 @@ def getLastModel(table_name = "modelData"):
             KeyConditionExpression = Key('modelType').eq('prod'), ScanIndexForward=False,
             Limit=1)
         return response["Items"]
-
     except Exception as e:
-        return e
+        return str(e)
 
 
 # Delete DyanmoDB Table    

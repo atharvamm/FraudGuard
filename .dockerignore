@@ -1,0 +1,14 @@
+# Files
+# **/.env
+**/*.pyc
+
+# Directories
+**/dump/
+**/.ipynb_checkpoints/
+**/__pycache__/
+**/data/
+**/catboost_info/
+# **/checkpoints/
+# **/logs/
+**/curtemp/
+# **/deps/

@@ -16,11 +16,10 @@ def load_houseprice_model():
     global houseprice_model
 
     lastModel = getLastModel()
-    if len(lastModel) > 0:
+    if not(isinstance(lastModel,str)) and len(lastModel) > 0:
         houseprice_model_path = lastModel[0]["model_path"]
     else:
         houseprice_model_path = 'models/checkpoints/housing_price_model.cbm'
-    
     houseprice_model = CatBoostRegressor()
     houseprice_model.load_model(houseprice_model_path)
 
@@ -44,7 +43,7 @@ def valid_vals(ip_data):
 
 # Check if the data type in the request is correct
 def check_dtypes(ip_data):
-    string_cols = "LotShape","ExterQual","CentralAir","GarageFinish"
+    string_cols = ("LotShape","ExterQual","CentralAir","GarageFinish")
 
     val_errors = []
     for col in string_cols:

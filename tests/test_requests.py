@@ -44,7 +44,7 @@ def test_house_price_model(host,port,samples = 100):
 
     # Remember to drop saleprice cause updated code
     sample_df = generate_sample_houseprice_points(path,samples)
-
+    sample_df.drop(columns="SalePrice",inplace=True)
     pred = 10
     # Get predictions pred times
     for _ in range(pred):
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         host = os.getenv("REMOTE_HOST")
     else:
         host = "localhost"
-    # test_local_service(host, 5000)
-    # test_house_price_model(host, 8000,samples=10)
-    test_authenticate_component(host,5000)
+    # test_local_service(host, 4040)
+    test_house_price_model(host, 4040,samples=10)
+    # test_authenticate_component(host,5000)
 

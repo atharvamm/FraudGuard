@@ -1,11 +1,11 @@
 from setup import *
-from utils.training import *
-from apscheduler.schedulers.background import BackgroundScheduler
+# from utils.training import *
+# from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask,request,jsonify
 import signal
 from models.houseprice import *
 import pandas as pd
-import atexit
+# import atexit
 from utils.logutils import *
 
 # '''
@@ -28,9 +28,9 @@ def is_ip_allowed():
 app = Flask(__name__)
 
 # Scheduler Object
-scheduler = BackgroundScheduler(max_instances = 1,daemon = True)
-scheduler.add_job(trainHousePriceModel, 'interval', seconds = 60,kwargs={"DB_NAME": "data","TABLE_NAME" : "trainingData"})
-atexit.register(lambda: scheduler.shutdown())
+# scheduler = BackgroundScheduler(max_instances = 1,daemon = True)
+# scheduler.add_job(trainHousePriceModel, 'interval', seconds = 60,kwargs={"DB_NAME": "data","TABLE_NAME" : "trainingData"})
+# atexit.register(lambda: scheduler.shutdown())
 
 # App Logging
 @app.before_request
@@ -70,7 +70,7 @@ def house_price():
         return jsonify({'error': 'Only POST requests are allowed for this endpoint'})
 
 
-scheduler.start()
+# scheduler.start()
 
 if __name__ == '__main__':
     try:
